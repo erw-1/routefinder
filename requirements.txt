@@ -1,0 +1,9 @@
+PyQt5
+geopandas
+shapely
+fiona
+gdal
+requests
+jinja2
+osmnx
+folium
