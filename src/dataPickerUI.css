@@ -1,0 +1,54 @@
+QGroupBox {
+    background-color: #2b2b2b;
+    color: white;
+    border: 2px solid #555;
+    border-radius: 5px;
+    margin-top: 10px;
+    min-height: 200px;
+    max-height: 200px;
+}
+
+QLabel {
+    color: white;
+    margin: 2px;
+}
+
+QLabel#groupTitle {
+    font-size: 18px;
+    font-weight: bold;
+    color: #d3d3d3;
+    padding-left: 5px;
+    margin-top: 5px;
+}
+
+QLineEdit, QComboBox {
+    background-color: #3c3c3c;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 3px;
+    margin: 2px;
+    height: 25px;
+}
+
+QPushButton {
+    height: 35px;
+    max-height: 35px;
+}
+
+QPushButton#smallButton {
+    max-width: 35px;
+}
+
+QPushButton:disabled {
+    background-color: #555;
+    color: #888;
+}
+
+QTextEdit {
+    background-color: #2b2b2b;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 5px;
+    max-height: 70px;
+}
