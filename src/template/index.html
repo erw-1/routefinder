@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Définition du jeu de caractères utilisé -->
+    <meta charset="UTF-8">
+    <!-- Configuration de la viewport pour une meilleure réactivité sur les appareils mobiles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Titre de la page -->
+    <title>FlatGeobuf Viewer</title>
+    <!-- Lien vers le fichier CSS externe personnalisé -->
+    <link rel="stylesheet" href="static/css/styles.css">
+    <!-- Lien vers le fichier CSS de Leaflet pour les styles de la carte -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Titre principal de la page -->
+    <h1>FlatGeobuf Viewer</h1>
+    
+    <!-- Étiquette pour le menu déroulant de sélection des jeux de données -->
+    <label for="dropdown">Choisir un jeu de données :</label>
+    
+    <!-- Menu déroulant pour sélectionner un jeu de données -->
+    <select id="dropdown">
+        <!-- Option par défaut désactivée et sélectionnée indiquant à l'utilisateur de choisir -->
+        <option value="" disabled selected>-- Select a dataset --</option>
+        <!-- Boucle Jinja2 pour générer les options du menu déroulant dynamiquement à partir des données -->
+        {% for option in options %}
+        <option value="{{ option.value }}" data-zone="{{ option.zone_source }}" data-points="{{ option.points_source }}">
+            {{ option.text }}
+        </option>
+        {% endfor %}
+    </select>
+    
+    <!-- Conteneur pour afficher la carte Leaflet -->
+    <div id="map"></div>
+    
+    <!-- Légende explicative des symboles utilisés sur la carte -->
+    <div id="legend">
+        <h4>Legend</h4>
+        <i class="legend-icon zone"></i> Zone Outline<br>
+        <i class="legend-icon points"></i> Points
+    </div>
+    
+    <!-- Inclusion du fichier JavaScript de Leaflet pour les fonctionnalités de la carte -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Inclusion des bibliothèques FlatGeobuf et JSON Formatter nécessaires pour le traitement des données -->
+    <script src="https://unpkg.com/flatgeobuf@3.22.0/dist/flatgeobuf-geojson.min.js"></script>
+    <!-- Lien vers le fichier JavaScript externe personnalisé contenant la logique de l'application -->
+    <script src="static/js/scripts.js"></script>
+</body>
+</html>
