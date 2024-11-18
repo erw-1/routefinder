@@ -34,7 +34,7 @@ def remove_layer_data(couple_display_number, section):
 
     # Supprimer le fichier GeoJSON associé en utilisant le numéro d'affichage
     file_path = os.path.join(
-        "temp", "data", f"couple{couple_display_number}_{section}.geojson"
+        "temp", "data", f"couple{couple_display_number}_{section}.fgb"
     )
     if os.path.exists(file_path):
         try:
@@ -65,7 +65,7 @@ def remove_couple_data(couple_display_number):
     # Supprimer les fichiers GeoJSON associés en utilisant le numéro d'affichage
     for section in ['zone', 'points']:
         file_path = os.path.join(
-            "temp", "data", f"couple{couple_display_number}_{section}.geojson"
+            "temp", "data", f"couple{couple_display_number}_{section}.fgb"
         )
         if os.path.exists(file_path):
             try:
