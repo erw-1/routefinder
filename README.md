@@ -1,5 +1,7 @@
 # routefinder
 
+DOCS SOON WIP EXPERIMENTAL PROJECT
+
 Need git, python 3.13, tested on win10+11
 
 ```
