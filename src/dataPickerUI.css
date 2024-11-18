@@ -1,60 +1,208 @@
-/* QGroupBox Stylisé */
+/* Style universel pour tous les éléments */
+* {
+    color: white; /* Texte en blanc */
+}
+
+/* Style pour les éléments imbriqués trois niveaux */
+* > * > * {
+    background-color: #202020; /* Fond gris foncé */
+    border: none;
+}
+
+/* Style principal pour QGroupBox */
 QGroupBox {
-    background-color: #2b2b2b;
-    color: white;
-    border: 2px solid #555;
-    border-radius: 5px;
+    background-color: #323232; /* Fond gris foncé */
+    color: white; /* Texte en blanc */
+    border: 2px solid #555; /* Bordure gris moyen */
+    border-radius: 5px; /* Coins arrondis */
     min-height: 250px;
     max-height: 250px;
 }
 
-/* QLabel Général */
+/* Style pour les éléments enfants directs et descendants de QGroupBox */
+QGroupBox > *, QGroupBox * {
+    background-color: #323232; /* Correspond au fond du GroupBox */
+}
+
+/* Style principal pour QLabel */
 QLabel {
-    color: white;
-    margin: 2px;
+    color: white; /* Texte en blanc */
+    margin: 2px; /* Espacement minimal */
 }
 
-/* Titre de GroupBox */
-QLabel#groupTitle {
-    font-size: 16px;
-    font-weight: bold;
-    color: #d3d3d3;
-    padding-left: 5px;
+/* Style spécifique pour le titre du GroupBox */
+UILabel#groupTitle {
+    font-size: 16px; /* Taille de police plus grande */
+    font-weight: bold; /* Texte en gras */
+    color: #d3d3d3; /* Couleur gris clair */
 }
 
-/* Champs de Saisie et ComboBox */
+/* Style pour les champs de saisie : QLineEdit, QComboBox et QPlainTextEdit */
 QLineEdit, QComboBox, QPlainTextEdit {
-    background-color: #3c3c3c;
-    color: white;
-    border: 1px solid #555;
-    border-radius: 3px;
-    margin-top: 2px !important;
+    background-color: #444; /* Gris légèrement plus clair */
+    color: white; /* Texte en blanc */
+    border: 1px solid #555; /* Bordure gris moyen */
+    border-radius: 3px; /* Coins arrondis */
+    margin-top: 2px;
     margin-right: 3px;
     padding: 2px;
-    height: 25px !important;
+    height: 25px;
     max-height: 25px;
 }
 
-/* Boutons */
+/* Style principal pour QPushButton */
 QPushButton {
-    height: 33px;
+    background-color: #444; /* Gris plus foncé */
+    color: white; /* Texte en blanc */
+    border: none; /* Aucun bord pour un style plat moderne */
+    border-radius: 5px; /* Coins arrondis */
+    min-height: 33px;
+    width: 70px;
     max-height: 33px;
 }
 
+/* Style spécifique pour le bouton d'ajout de couple */
+#addCoupleButton {
+    margin-left: 10px;
+}
+
+/* Style spécifique pour le bouton de génération */
+#generateButton {
+    margin-right: 10px;
+}
+
+/* Style au survol pour QPushButton */
+QPushButton:hover {
+    background-color: #555; /* Surlignement au survol */
+}
+
+/* Style pour l'état désactivé de QPushButton */
+QPushButton:disabled {
+    background-color: #555; /* Gris pour l'état désactivé */
+    color: #888; /* Texte atténué pour les boutons désactivés */
+}
+
+/* Style pour les petits boutons */
 QPushButton#smallButton {
     max-width: 35px;
 }
 
-QPushButton:disabled {
-    background-color: #555;
-    color: #888;
+/* Style principal pour la zone de log QTextEdit */
+QTextEdit#log_area {
+    background-color: #323232; /* Correspond au fond du GroupBox */
+    color: white; /* Texte en blanc */
+    border: 1px solid #555; /* Bordure gris moyen */
+    border-radius: 5px; /* Coins arrondis */
+    max-height: 180px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
-/* Zone de Log */
-QTextEdit#log_area {
-    background-color: #2b2b2b;
+/* Style spécifique pour le bouton closeButton */
+#closeButton {
+    background-color: #2B2B2B;
     color: white;
-    border: 1px solid #555;
+    border: none;
     border-radius: 5px;
-    max-height: 180px;
+    margin-top: 10px;
+    margin-right: 2px;
+    height: 30px;
+    width: 30px;
+    min-height: 30px;
+    min-width: 30px;
+    max-height: 30px;
+    max-width: 30px;
+}
+
+/* Style au survol pour closeButton */
+#closeButton:hover {
+    background-color: #aa5C5C;  /* Couleur rouge au survol */
+}
+
+/* Style pour la barre de titre */
+#title_bar {
+    background-color: #202020;  /* Couleur de fond */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 25px;
+}
+
+/* Style principal pour la barre de défilement verticale */
+QScrollBar:vertical {
+    border: none;
+    background: #202020; /* Fond de la barre de défilement */
+    width: 8px;
+    margin: 1px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 3px;
+}
+
+/* Style pour la poignée de la barre de défilement verticale */
+QScrollBar::handle:vertical {
+    background: #444; /* Couleur de la poignée */
+    min-height: 20px;
+    border-radius: 3px; /* Bord arrondi */
+}
+
+/* Style au survol pour la poignée de la barre de défilement verticale */
+QScrollBar::handle:vertical:hover {
+    background: #555; /* Couleur de la poignée au survol */
+}
+
+/* Style pour les boutons haut et bas de la barre de défilement verticale */
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    background: none; /* Cache les boutons */
+    height: 0px;
+    subcontrol-origin: margin;
+}
+
+/* Empêche les boutons par défaut de consommer de l'espace dans la barre de défilement verticale */
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/* Style principal pour la barre de défilement horizontale */
+QScrollBar:horizontal {
+    border: none;
+    background: #151515; /* Fond de la barre de défilement */
+    height: 8px;
+    margin: 0px;
+    border-radius: 3px;
+}
+
+/* Style pour la poignée de la barre de défilement horizontale */
+QScrollBar::handle:horizontal {
+    background: #444;
+    min-width: 20px;
+    border-radius: 3px;
+}
+
+/* Style au survol pour la poignée de la barre de défilement horizontale */
+QScrollBar::handle:horizontal:hover {
+    background: #555;
+}
+
+/* Style pour les boutons gauche et droit de la barre de défilement horizontale */
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    background: none;
+    width: 0px;
+}
+
+/* Empêche les boutons par défaut de consommer de l'espace dans la barre de défilement horizontale */
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+/* Style principal pour QDialog */
+QDialog {
+    background-color: #202020;
+    color: white; /* Couleur du texte */
+    border-radius: 10px; /* Coins arrondis */
+    padding: 10px; /* Espacement interne */
 }
