@@ -3,12 +3,24 @@ import subprocess
 import platform
 import sys
 
+
+def pause_and_exit(message):
+    """Affiche un message d'erreur et attend une entrée pour quitter."""
+    print(message)
+    input("Appuyez sur Entrée pour quitter.")
+    sys.exit(1)
+
 def run_command(command):
     """Exécute une commande shell et arrête si elle échoue."""
     result = subprocess.run(command, shell=True)
     if result.returncode != 0:
         print(f"Error: Command '{command}' failed!")
         exit(1)
+
+
+# Vérification de la version de Python
+if sys.version_info < (3, 13):
+    pause_and_exit("Erreur : Ce script nécessite Python 3.13 ou une version supérieure.")
 
 # Étape 1 : Changer le répertoire courant pour simuler une exécution depuis le répertoire parent
 script_dir = os.path.abspath(os.path.dirname(__file__))  # Chemin absolu vers le fichier actuel
