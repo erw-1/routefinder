@@ -122,6 +122,20 @@ def generate_web_page(json_path):
         logger.error(f"Le répertoire source des fichiers statiques n'existe pas : {static_src}")
         raise FileNotFoundError(f"Répertoire source des fichiers statiques non trouvé : {static_src}")
 
+    # Copie du fichier 'Open map.url' depuis le répertoire des templates vers le répertoire de sortie
+    open_map_src = os.path.join(template_dir, 'Open map.url')
+    open_map_dst = os.path.join(output_dir, 'Open map.url')
+    if os.path.isfile(open_map_src):
+        try:
+            shutil.copy(open_map_src, open_map_dst)
+            logger.info(f"Fichier 'Open map.url' copié de {open_map_src} vers {open_map_dst}.")
+        except Exception as e:
+            logger.error(f"Erreur lors de la copie de 'Open map.url' : {e}")
+            raise
+    else:
+        logger.error(f"Le fichier 'Open map.url' n'existe pas dans le répertoire des templates : {open_map_src}")
+        raise FileNotFoundError(f"Fichier 'Open map.url' non trouvé dans les templates : {open_map_src}")
+
     # Définition du chemin du fichier HTML de sortie
     output_file = os.path.join(output_dir, "index.html")
     logger.debug(f"Chemin du fichier HTML de sortie : {output_file}")
