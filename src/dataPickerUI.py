@@ -3,19 +3,21 @@ from PySide6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QScrollArea, QComboBox, QTextEdit, QMessageBox,
     QGroupBox, QFrame, QFileDialog, QInputDialog, QStackedWidget, QPlainTextEdit
 )
-from PySide6.QtGui import QIcon
-from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon, QPixmap, QPainter, QColor, QBrush, QPen, QCursor
+from PySide6.QtCore import Qt, QPoint
 
 import os
 import shutil
 import sys
 import subprocess
+import json
 
 # Importation des fonctions nécessaires
 from dataVerification import verify_and_update_json, update_json_file
 from uiUtils import (
     disable_scroll_wheel, remove_couple_data, remove_layer_data
 )
+from genWebmap import generate_web_page  # Importer la fonction Jinja
 
 
 class MainWindow(QMainWindow):
@@ -25,6 +27,10 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 1150, 600)
         self.setMinimumWidth(800)
 
+        # Supprimer la barre de titre par défaut
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+
         # Définir l'icône de l'application
         self.setWindowIcon(QIcon("img/dataPickerLogo.png"))
 
@@ -32,22 +38,214 @@ class MainWindow(QMainWindow):
         self.couples = {}
         self.next_couple_id = 1  # Compteur séquentiel d'ID
 
-        # Configuration de la mise en page principale
+        # Widget central
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.main_layout = QVBoxLayout(self.central_widget)
+        self.main_layout.setContentsMargins(2, 2, 2, 2)  # Add margins for the custom border
 
-        # Configuration des composants de l'interface utilisateur
+        # Initialiser les variables pour le redimensionnement
+        self.resizing = False
+        self.resize_direction = None
+        self.old_resize_pos = None
+
+        # Définir une marge pour détecter les zones de redimensionnement
+        self.resize_margin = 10
+
+        # Ajouter une barre de titre personnalisée
+        self.title_bar = self.create_title_bar()
+        self.main_layout.addWidget(self.title_bar)
+
+        # Ajouter la zone de défilement, les contrôles et la zone de log
         self.setup_scroll_area()
         self.setup_controls()
         self.setup_log_area()
-        self.load_stylesheet("src/dataPickerUI.css")
 
-        # Ajouter le couple par défaut
+        # Charger le fichier CSS
+        try:
+            self.load_stylesheet("src/dataPickerUI.css")
+        except FileNotFoundError:
+            self.load_stylesheet("dataPickerUI.css")
+
+
+        # Ajouter un couple par défaut
         self.add_couple()
 
-        # Connecter la méthode de nettoyage au signal de fermeture de l'application
+        # Connecter la méthode de nettoyage au signal de fermeture
         QApplication.instance().aboutToQuit.connect(self.cleanup)
+
+        # Variables pour déplacer la fenêtre
+        self.old_pos = None
+
+    def create_title_bar(self):
+        """Créer une barre de titre personnalisée."""
+        title_bar = QWidget(self)
+        title_bar.setObjectName("title_bar")
+        title_layout = QHBoxLayout(title_bar)
+        title_layout.setContentsMargins(0, 0, 10, 10)
+        title_layout.setSpacing(2)
+
+        # Icône de l'application
+        app_icon = QLabel(self)
+        app_icon.setPixmap(QIcon("img/dataPickerLogo.png").pixmap(24, 24))
+
+        # Titre de l'application
+        title_label = QLabel("Application Cartographique", self)
+        title_label.setStyleSheet("color: white; font-size: 14px;")
+        title_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
+        # Bouton de fermeture
+        close_button = QPushButton("✕", self)
+        close_button.setObjectName("closeButton")
+        close_button.setFixedSize(30, 30)
+        close_button.clicked.connect(self.close)
+
+        # Ajouter les widgets à la barre
+        title_layout.addWidget(app_icon)
+        title_layout.addWidget(title_label)
+        title_layout.addStretch()
+        title_layout.addWidget(close_button)
+
+        return title_bar
+
+    def paintEvent(self, event):
+        """Draw rounded corners and a border around the outer edge of the window."""
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        rect = self.rect()
+
+        # Draw the border
+        border_color = QColor(68, 68, 68)  # #444
+        border_width = 2
+        painter.setBrush(Qt.NoBrush)
+        painter.setPen(QPen(border_color, border_width))
+        painter.drawRoundedRect(rect.adjusted(1, 1, -1, -1), 10, 10)
+
+        # Draw the background
+        painter.setBrush(QBrush(QColor(32, 32, 32)))  # Background color
+        painter.setPen(Qt.NoPen)
+        painter.drawRoundedRect(rect.adjusted(border_width, border_width, -border_width, -border_width), 10, 10)
+
+    def mousePressEvent(self, event):
+        """Gérer les clics de souris pour le déplacement ou le redimensionnement."""
+        if event.button() == Qt.LeftButton:
+            self.old_pos = event.globalPosition().toPoint()
+            self.old_resize_pos = event.globalPosition().toPoint()
+
+            # Déterminer si le clic est dans une zone de redimensionnement
+            self.resize_direction = self.get_resize_direction(event.pos())
+            if self.resize_direction:
+                self.resizing = True
+                event.accept()
+            else:
+                self.resizing = False
+
+    def mouseMoveEvent(self, event):
+        """Gérer les mouvements de la souris pour déplacer ou redimensionner la fenêtre."""
+        if self.resizing:
+            # Calculer la nouvelle taille en fonction de la direction
+            delta = event.globalPosition().toPoint() - self.old_resize_pos
+            rect = self.geometry()
+
+            new_width = rect.width()
+            new_height = rect.height()
+
+            if 'left' in self.resize_direction:
+                new_width = max(rect.width() - delta.x(), self.minimumWidth())
+                rect.setLeft(rect.right() - new_width)
+            if 'right' in self.resize_direction:
+                new_width = max(rect.width() + delta.x(), self.minimumWidth())
+                rect.setRight(rect.left() + new_width)
+            if 'top' in self.resize_direction:
+                new_height = max(rect.height() - delta.y(), self.minimumHeight())
+                rect.setTop(rect.bottom() - new_height)
+            if 'bottom' in self.resize_direction:
+                new_height = max(rect.height() + delta.y(), self.minimumHeight())
+                rect.setBottom(rect.top() + new_height)
+
+            self.setGeometry(rect)
+            self.old_resize_pos = event.globalPosition().toPoint()
+            event.accept()
+        elif self.old_pos:
+            # Déplacer la fenêtre
+            delta = event.globalPosition().toPoint() - self.old_pos
+            self.move(self.pos() + delta)
+            self.old_pos = event.globalPosition().toPoint()
+            event.accept()
+        else:
+            # Mettre à jour le curseur en fonction de la position
+            resize_direction = self.get_resize_direction(event.pos())
+            if resize_direction:
+                self.setCursor(self.get_resize_cursor(resize_direction))
+            else:
+                self.setCursor(Qt.ArrowCursor)
+
+    def mouseReleaseEvent(self, event):
+        """Réinitialiser les variables après le déplacement ou le redimensionnement."""
+        if self.resizing:
+            self.resizing = False
+            rect = self.geometry()
+
+            # Enforce minimum dimensions after resizing
+            if rect.width() < self.minimumWidth():
+                rect.setWidth(self.minimumWidth())
+            if rect.height() < self.minimumHeight():
+                rect.setHeight(self.minimumHeight())
+            self.setGeometry(rect)
+
+        self.old_pos = None
+        self.old_resize_pos = None
+        event.accept()
+
+    def get_resize_direction(self, pos):
+        """Déterminer la direction de redimensionnement en fonction de la position."""
+        rect = self.rect()
+        direction = ''
+
+        if pos.x() <= self.resize_margin:
+            direction += 'left'
+        elif pos.x() >= rect.width() - self.resize_margin:
+            direction += 'right'
+
+        if pos.y() <= self.resize_margin:
+            direction += 'top'
+        elif pos.y() >= rect.height() - self.resize_margin:
+            direction += 'bottom'
+
+        return direction if direction else None
+
+    def get_resize_direction(self, pos):
+        """Déterminer la direction de redimensionnement en fonction de la position."""
+        rect = self.rect()
+        direction = ''
+
+        if pos.x() <= self.resize_margin:
+            direction += 'left'
+        elif pos.x() >= rect.width() - self.resize_margin:
+            direction += 'right'
+
+        if pos.y() <= self.resize_margin:
+            direction += 'top'
+        elif pos.y() >= rect.height() - self.resize_margin:
+            direction += 'bottom'
+
+        return direction if direction else None
+
+    def get_resize_cursor(self, direction):
+        """Retourne le curseur approprié en fonction de la direction de redimensionnement."""
+        if direction in ('left', 'right'):
+            return Qt.SizeHorCursor
+        elif direction in ('top', 'bottom'):
+            return Qt.SizeVerCursor
+        elif 'left' in direction and 'top' in direction:
+            return Qt.SizeFDiagCursor
+        elif 'right' in direction and 'bottom' in direction:
+            return Qt.SizeFDiagCursor
+        elif 'left' in direction and 'bottom' in direction:
+            return Qt.SizeBDiagCursor
+        elif 'right' in direction and 'top' in direction:
+            return Qt.SizeBDiagCursor
+        return Qt.ArrowCursor
 
     def setup_scroll_area(self):
         """Configurer une zone de défilement pour ajouter des couples."""
@@ -64,11 +262,13 @@ class MainWindow(QMainWindow):
 
         # Bouton "Ajouter un couple" avec alignement en haut
         self.add_couple_button = QPushButton("Ajouter un couple")
+        self.add_couple_button.setObjectName("addCoupleButton")  # Nom pour le ciblage CSS
         self.add_couple_button.clicked.connect(self.add_couple)
         button_layout.addWidget(self.add_couple_button, alignment=Qt.AlignTop)
 
         # Bouton "Générer et exporter" avec alignement en haut
         self.generate_button = QPushButton("Générer et exporter")
+        self.generate_button.setObjectName("generateButton")  # Nom pour le ciblage CSS
         self.generate_button.setEnabled(False)  # Désactivé jusqu'à ce que tous les couples soient vérifiés
         self.generate_button.clicked.connect(self.generate_and_export)
         button_layout.addWidget(self.generate_button, alignment=Qt.AlignTop)
@@ -128,7 +328,7 @@ class MainWindow(QMainWindow):
         title_label.setProperty("couple_id", couple_id)
         title_layout.addWidget(title_label, alignment=Qt.AlignLeft)
 
-        remove_button = QPushButton("❌")
+        remove_button = QPushButton("✕")
         remove_button.setObjectName("smallButton")
         remove_button.clicked.connect(lambda: self.remove_couple(couple_id))
         remove_button.setToolTip("Supprimer ce couple")
@@ -400,12 +600,12 @@ class MainWindow(QMainWindow):
             if self.couples[couple_id]['zone_verified']:
                 couple_data["Zone"] = {
                     "name": zone_data["name"],
-                    "source": f"data/couple{couple_display_number}_zone.geojson"
+                    "source": f"data/couple{couple_display_number}_zone.fgb"
                 }
             if self.couples[couple_id]['points_verified']:
                 couple_data["Points"] = {
                     "name": points_data["name"],
-                    "source": f"data/couple{couple_display_number}_points.geojson"
+                    "source": f"data/couple{couple_display_number}_points.fgb"
                 }
 
             if couple_data:
@@ -474,6 +674,14 @@ class MainWindow(QMainWindow):
         export_path = self.export_data(export_name)
         if export_path is None:
             return
+        
+        # Appeler le script Jinja pour générer une page web
+        try:
+            self.log_area.append("Génération de la page web...\n")
+            html_output_path = generate_web_page(os.path.join("www", export_name, "data","report.json"))  # Appeler avec le chemin du JSON
+            self.log_area.append(f"Page web générée : {html_output_path}\n")
+        except Exception as e:
+            self.log_area.append(f"Erreur lors de la génération de la page web : {str(e)}\n")
 
         # Ouvrir le dossier exporté
         self.open_exported_folder(export_path)
