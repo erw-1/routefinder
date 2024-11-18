@@ -1,44 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Root variables for consistent styling */
+:root {
+    --background-color: rgba(30, 30, 30, 0.2); /* Frosted glass background */
+    --blur-effect: blur(10px); /* Frosted glass effect */
+    --text-color: white; /* Text color */
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6); /* Box shadow for UI elements */
+    --font-family: 'Poppins', Arial, sans-serif; /* Add Poppins font */
+    --font-size-base: 14px; /* Base font size */
+    --border-radius: 10px; /* Rounded corners */
+    --padding: 10px 15px; /* Default padding */
+}
+
+html, body, *, * *, * * *, * > *, * > * > * {
+    font-family: var(--font-family) !important;
+}
+
+/* General body styling */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    position: relative;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color); /* Dark background */
+    color: var(--text-color);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Map styling for fullscreen */
 #map {
-    width: 100%;
-    height: 500px;
-    border: 1px solid #ccc;
-    margin-top: 20px;
-}
-
-#legend {
-    background: white;
-    padding: 10px;
     position: absolute;
-    bottom: 30px;
-    left: 10px;
-    border: 1px solid #ccc;
-    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; /* Keep the map as the base layer */
+    background: #000;
 }
 
+/* Shared styles for all UI elements */
+h1,
+label,
+select,
+#legend,.info  {
+    position: absolute;
+    background: var(--background-color);
+    backdrop-filter: var(--blur-effect);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    font-size: var(--font-size-base);
+    padding: var(--padding);
+    z-index: 1000;
+    margin: 0;
+    border-top: solid 1px #66666643;
+    border-right: solid 1px #33333343;
+    border-left: solid 1px #33333343;
+    border-bottom: solid 1px #00000043;
+}
+
+/* Title styling */
+h1 {
+    top: 20px;
+    left: 20px;
+    font-size: 20px;
+}
+
+/* Label and dropdown styling (stacked under the title) */
+label {
+    top: 150px;
+    left: 20px;
+    font-size: 16px;
+}
+
+select {
+    top: 200px;
+    left: 20px;
+    position: absolute;
+    font-size: var(--font-size-base);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 8px;
+    box-shadow: var(--box-shadow);
+}
+
+/* Style the dropdown options (for supported browsers) */
+select option {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    background: none !important;
+    background-color: var(--background-color) !important;
+    backdrop-filter: var(--blur-effect);
+    color: black;
+    padding: 10px; /* Add padding to options */
+}
+
+/* Highlight selected option */
+select option:checked {
+    background: none !important;
+    background-color: #3030307c !important; /* Blue highlight for selected option */
+    color: white;
+}
+
+/* Legend (bottom left corner, clean alignment) */
+#legend {
+    bottom: 20px;
+    left: 20px;
+    padding: 10px;
+    background: var(--background-color);
+    backdrop-filter: var(--blur-effect);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    font-size: var(--font-size-base);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-direction: row;
+    align-content: center;
+    justify-content: flex-start;
+}
+
+#legend h4 {
+    font-size: 16px;
+    margin: 5px;
+    padding-right: 15px;
+    border-right: solid 2px #66666643;
+}
+
+/* Align icons and names side by side */
+#legend > * {
+    display: flex; /* Treat children as rows */
+    align-items: center; /* Vertically align icons and text */
+    gap: 10px; /* Spacing between the icon and text */
+}
+
+/* Style for icons */
 .legend-icon {
-    display: inline-block;
     width: 18px;
     height: 18px;
-    margin-right: 8px;
-    vertical-align: middle;
+    flex-shrink: 0; /* Prevent icons from resizing */
 }
 
 .legend-icon.zone {
-    background: #4a4a4a;
-    border: 2px solid #4a4a4a;
-    width: 18px;
-    height: 18px;
+    background: rgba(74, 74, 74, 0.8);
+    border: 2px solid rgba(74, 74, 74, 0.9);
 }
 
 .legend-icon.points {
-    background: #808080;
+    background: rgba(128, 128, 128, 0.8);
     border-radius: 50%;
-    width: 10px;
-    height: 10px;
+}
+
+
+/* Attribution styling (bottom right corner) */
+.leaflet-control-attribution {
+    padding: 3px !important;
+    background-color: var(--background-color) !important;
+    border-top-left-radius: 5px;
+    margin: 10px;
+    font-size: 12px;
+    backdrop-filter: var(--blur-effect);
+}
+
+.leaflet-control-attribution a {
+    color: #666 !important;
+}
+
+.leaflet-control-zoom.leaflet-bar.leaflet-control {
+    display: none;
+}
+
+
+/* Styles pour les routes avec effet néon */
+.route-voiture {
+    stroke: pink;
+    stroke-width: 3;
+    fill: none;
+    filter: drop-shadow(0 0 10px pink);
+}
+
+.route-marche {
+    stroke: cyan;
+    stroke-width: 3;
+    fill: none;
+    filter: drop-shadow(0 0 10px cyan);
+}
+
+.route-camion {
+    stroke: orange;
+    stroke-width: 3;
+    fill: none;
+    filter: drop-shadow(0 0 10px orange);
+}
+
+/* Styles pour les points */
+.point-voiture {
+    fill: pink;
+    stroke: white;
+    stroke-width: 2;
+}
+
+.point-marche {
+    fill: cyan;
+    stroke: white;
+    stroke-width: 2;
+}
+
+.point-camion {
+    fill: orange;
+    stroke: white;
+    stroke-width: 2;
+}
+
+/* Style pour le marqueur d'intervention */
+.intervention-marker {
+    fill: white;
+    stroke: black;
+    stroke-width: 2;
+    r: 10; /* Rayon du cercle */
+    /* Assurez-vous que ce marqueur est au-dessus des autres éléments */
+    z-index: 1000;
+}
+
+h4 {
+    text-align: center;
+    font-size: larger;
+    color: #888;
+    margin: inherit;
+}
+
+ul {
+    list-style-type: none;
+    padding: 5px;
+}
+
+.info.leaflet-control {
+    padding: 7px;
 }
