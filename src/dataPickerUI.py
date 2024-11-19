@@ -23,7 +23,7 @@ from genWebmap import generate_web_page  # Importer la fonction Jinja
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Application Cartographique")
+        self.setWindowTitle("RouteFinder Builder")
         self.setGeometry(100, 100, 1150, 600)
         self.setMinimumWidth(800)
 
@@ -674,7 +674,7 @@ class MainWindow(QMainWindow):
         export_path = self.export_data(export_name)
         if export_path is None:
             return
-        
+
         # Appeler le script Jinja pour générer une page web
         try:
             self.log_area.append("Génération de la page web...\n")
@@ -683,17 +683,71 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.log_area.append(f"Erreur lors de la génération de la page web : {str(e)}\n")
 
+        # Proposer de lancer le serveur HTTP
+        self.propose_launch_server(html_output_path.replace("\\index.html", ""))
+        
         # Ouvrir le dossier exporté
-        self.open_exported_folder(export_path)
+        self.open_exported_folder(html_output_path.replace("\\index.html", ""))
+
+    def propose_launch_server(self, export_path):
+        """Propose à l'utilisateur de lancer un serveur HTTP pour le dossier exporté."""
+        msg_box = QMessageBox(self)
+        msg_box.setIcon(QMessageBox.Question)
+        msg_box.setWindowTitle("Lancer le serveur HTTP")
+        msg_box.setText("Voulez-vous lancer un serveur HTTP pour visualiser les fichiers exportés?")
+        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg_box.setDefaultButton(QMessageBox.Yes)
+
+        # Connecter les boutons aux actions
+        ret = msg_box.exec_()
+
+        if ret == QMessageBox.Yes:
+            self.launch_http_server(export_path)
+
+    def launch_http_server(self, export_path):
+        """Lance un serveur HTTP dans le répertoire export_path."""
+        try:
+            # Définir le répertoire de travail
+            os.chdir(export_path)
+
+            # Lancer le serveur HTTP en arrière-plan
+            # Utilisation de subprocess.Popen pour ne pas bloquer l'interface
+            subprocess.Popen(["py", "-m", "http.server"], cwd=export_path)
+
+            self.log_area.append(f"Serveur HTTP lancé dans {export_path}\n")
+            QMessageBox.information(self, "Serveur HTTP", f"Serveur HTTP lancé dans {export_path} sur le port 8000.")
+        except Exception as e:
+            self.log_area.append(f"Erreur lors du lancement du serveur HTTP : {str(e)}\n")
+            QMessageBox.critical(self, "Erreur", f"Impossible de lancer le serveur HTTP : {str(e)}")
 
     def cleanup(self):
-        """Supprimer le dossier temporaire 'temp' lorsque l'application se ferme."""
-        if os.path.exists('temp'):
+        """Nettoyer les ressources et arrêter le serveur HTTP à la fermeture."""
+        
+        # Arrêter le serveur HTTP
+        if hasattr(self, 'http_server') and self.http_server:
             try:
-                shutil.rmtree('temp')
-                self.log_area.append("Dossier temporaire 'temp' supprimé à la fermeture.\n")
+                self.http_server.shutdown()  # Méthode pour arrêter le serveur
+                self.log_area.append("Serveur HTTP arrêté à la fermeture.\n")
             except Exception as e:
-                self.log_area.append(f"Erreur lors de la suppression du dossier 'temp' à la fermeture : {e}\n")
+                self.log_area.append(f"Erreur lors de l'arrêt du serveur HTTP : {e}\n")
+
+        # Supprimer le dossier 'temp' dans le répertoire courant
+        current_temp_path = os.path.join(os.getcwd(), 'temp')
+        if os.path.exists(current_temp_path):
+            try:
+                shutil.rmtree(current_temp_path)
+                self.log_area.append("Dossier temporaire 'temp' supprimé dans le répertoire courant à la fermeture.\n")
+            except Exception as e:
+                self.log_area.append(f"Erreur lors de la suppression du dossier 'temp' dans le répertoire courant : {e}\n")
+
+        # Supprimer le dossier 'temp' dans le répertoire parent
+        parent_temp_path = os.path.join(os.path.dirname(os.getcwd()), 'temp')
+        if os.path.exists(parent_temp_path):
+            try:
+                shutil.rmtree(parent_temp_path)
+                self.log_area.append("Dossier temporaire 'temp' supprimé dans le répertoire parent à la fermeture.\n")
+            except Exception as e:
+                self.log_area.append(f"Erreur lors de la suppression du dossier 'temp' dans le répertoire parent : {e}\n")
 
     def verify_button_action(self, couple_id, section, verify_button):
         """Gérer l'événement de clic sur le bouton de vérification."""
