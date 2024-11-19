@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         app_icon.setPixmap(QIcon("img/dataPickerLogo.png").pixmap(24, 24))
 
         # Titre de l'application
-        title_label = QLabel("Application Cartographique", self)
+        title_label = QLabel("RouteFinder Builder", self)
         title_label.setStyleSheet("color: white; font-size: 14px;")
         title_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
