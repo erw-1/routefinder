@@ -21,6 +21,7 @@ No code interface and drag and drop export.
 > #### Ideas
 > - Ability to load and save a .cfg file in RouteFinder Builder to keep  
 > - Auto chose the correct geometry type in loaded geodata when several ones are found (*eww*)
+> - Baselayer picker
 > - More
 
 > [!WARNING]
@@ -28,3 +29,4 @@ No code interface and drag and drop export.
 > - Whole project is in French
 > - Only tested on Windows 10 & 11
 > - Did not do extensive testing with all geodata file formats and API types
+
