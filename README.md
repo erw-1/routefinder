@@ -1,7 +1,7 @@
 # RouteFinder Builder
 
-## This project lets you build a static matrix routing webmap app with your own data.
-## No code interface and drag and drop export.
+This project lets you build a static matrix routing webmap app with your own data.
+No code interface and drag and drop export.
 
 > [!CAUTION]
 > ### DOCS SOON, WIP, EXPERIMENTAL PROJECT
