@@ -234,7 +234,7 @@ function formatTravelTime(seconds) {
  * @param {Array} fastestPoints - Tableau des points les plus rapides.
  */
 async function drawFastestRoutes(lat, lng, fastestPoints) {
-    // Efface les routes et les points précédents
+    // Efface les routes et les points colorés précédents
     routesLayer.clearLayers();
     fastestPointsLayer.clearLayers();
 
@@ -276,8 +276,8 @@ async function drawFastestRoutes(lat, lng, fastestPoints) {
     fastestPoints.forEach(fp => {
         if (fp.layer) {
             const { lat, lng } = fp.layer.getLatLng();
-            // Supprime le marqueur actuel (gris) et ajoute un nouveau marqueur coloré
-            currentPointsLayer.removeLayer(fp.layer);
+            // Ne pas supprimer les points de base
+            // Ajoute un nouveau marqueur coloré au-dessus des points de base
             const coloredPoint = L.circleMarker([lat, lng], {
                 radius: 6,
                 className: `point-${fp.mode.toLowerCase()}`,
@@ -395,7 +395,7 @@ async function getRoute(mode, coordinates) {
 map.on('click', async function (event) {
     const { lat, lng } = event.latlng;
 
-    // Efface le marqueur d'intervention précédent et les routes/points existants
+    // Efface le marqueur d'intervention précédent et les routes/points colorés existants
     interventionLayer.clearLayers();
     routesLayer.clearLayers();
     fastestPointsLayer.clearLayers();
@@ -433,7 +433,7 @@ async function loadSelectedData() {
         return;
     }
 
-    // Supprime les couches existantes
+    // Supprime les couches existantes sauf les points de base
     if (currentZoneLayer) {
         map.removeLayer(currentZoneLayer);
         currentZoneLayer = null;
