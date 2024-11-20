@@ -19,7 +19,8 @@ No code interface and drag and drop export.
 
 > [!TIP]
 > #### Ideas
-> - Ability to load and save a .cfg file in RouteFinder Builder to keep  
+> - Ability to load and save a .cfg file in RouteFinder Builder to keep
+> - Ability to load data directly in the web page (all the Python stuff was made for an explorative school project)  
 > - Auto chose the correct geometry type in loaded geodata when several ones are found (*eww*)
 > - Baselayer picker
 > - More
