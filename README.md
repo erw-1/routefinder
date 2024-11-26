@@ -3,6 +3,8 @@
 This project lets you build a static matrix routing webmap app with your own data.
 No code interface and drag and drop export.
 
+My first attempt at an actual github project! Still not fully released.
+
 > [!CAUTION]
 > ### DOCS SOON, WIP, EXPERIMENTAL PROJECT
 
