@@ -17,6 +17,7 @@ No code interface and drag and drop export.
 > #### Requirements
 > - Python 3.13
 > - Git
+> - Windows (for now)
 >
 > #### Quickstart:
 > ```shell
