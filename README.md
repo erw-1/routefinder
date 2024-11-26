@@ -26,8 +26,9 @@ No code interface and drag and drop export.
 
 > [!TIP]
 > #### Ideas
-> - Ability to load and save a .cfg file in RouteFinder Builder to keep
+> - Ability to load and save a .cfg file in RouteFinder Builder to save/ share project configurations
 > - Ability to load data directly in the web page 
 > - Auto chose the correct geometry type in loaded geodata when several ones are found (*eww*)
 > - Baselayer picker
+> - Docker
 > - More
