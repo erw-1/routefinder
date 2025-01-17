@@ -23,7 +23,7 @@ info.update = function (travelTimes) {
     travelTimes.forEach(pt => {
         html += `
             <li>
-                <span style="color: ${pt.color};">&#9679;</span>
+                <span style="font-size: 18px; color: ${pt.color};">&#9679;</span>
                 <strong>${pt.mode}</strong>: <em>${pt.name}</em> - ${pt.time !== Infinity ? pt.formattedTime : 'N/A'}
             </li>
         `;
@@ -49,9 +49,9 @@ const travelTimeCache = new Map();
 
 // Mapping des modes de transport aux couleurs
 const modeColorMap = {
-    'Voiture': 'pink',
-    'Marche': 'cyan',
-    'Camion': 'orange'
+    'Voiture': '#ea64ff',
+    'Marche': '00bfff',
+    'Camion': 'ff9f00'
 };
 
 // Mapping des modes de transport aux noms ORS
