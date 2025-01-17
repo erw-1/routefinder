@@ -50,8 +50,8 @@ const travelTimeCache = new Map();
 // Mapping des modes de transport aux couleurs
 const modeColorMap = {
     'Voiture': '#ea64ff',
-    'Marche': '00bfff',
-    'Camion': 'ff9f00'
+    'Marche': '#00bfff',
+    'Camion': '#ff9f00'
 };
 
 // Mapping des modes de transport aux noms ORS
