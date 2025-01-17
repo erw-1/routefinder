@@ -23,7 +23,7 @@ My first attempt at an actual github project! Still not fully released.
 > [!WARNING]
 > #### Known issues
 > - I had no clue how to work with venv/ multi platforms yet, so the start of the program is janky. It worked on every windows system I tried, but it probably won't work on Unix systems. Docker soon ?
-> - Whole project is in French (all the Python stuff was made for an explorative school project in France)  
+> - Whole project is in French (all the Python stuff was made for an explorative project in France)  
 > - Only tested on Windows 10 & 11
 > - Did not do extensive testing with all geodata file formats and API types
 
