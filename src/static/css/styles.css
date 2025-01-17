@@ -10,6 +10,12 @@
     --font-size-base: 14px; /* Base font size */
     --border-radius: 10px; /* Rounded corners */
     --padding: 10px 15px; /* Default padding */
+    --car: #ea64ff;
+    --walking: #00bfff;
+    --truck: #ff9f00;
+    --car-shadow: #ee16ff;
+    --walking-shadow: #009cff;
+    --truck-shadow: #ff7200;
 }
 
 html, body, *, * *, * * *, * > *, * > * > * {
@@ -176,41 +182,41 @@ select option:checked {
 
 /* Styles pour les routes avec effet néon */
 .route-voiture {
-    stroke: pink;
+    stroke: var(--car);
     stroke-width: 3;
     fill: none;
-    filter: drop-shadow(0 0 10px pink);
+    filter: drop-shadow(0 0 10px var(--car-shadow));
 }
 
 .route-marche {
-    stroke: cyan;
+    stroke: var(--walking);
     stroke-width: 3;
     fill: none;
-    filter: drop-shadow(0 0 10px cyan);
+    filter: drop-shadow(0 0 10px var(--walking-shadow));
 }
 
 .route-camion {
-    stroke: orange;
+    stroke: var(--truck);
     stroke-width: 3;
     fill: none;
-    filter: drop-shadow(0 0 10px orange);
+    filter: drop-shadow(0 0 10px var(--truck-shadow));
 }
 
 /* Styles pour les points */
 .point-voiture {
-    fill: pink;
+    fill: var(--car);
     stroke: white;
     stroke-width: 2;
 }
 
 .point-marche {
-    fill: cyan;
+    fill: var(--walking);
     stroke: white;
     stroke-width: 2;
 }
 
 .point-camion {
-    fill: orange;
+    fill: var(--truck);
     stroke: white;
     stroke-width: 2;
 }
